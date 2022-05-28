@@ -1,54 +1,44 @@
 plugins {
-    id "java-library"
-    id "io.qameta.allure" version "2.9.6"
+    id 'java-library'
 }
 
 repositories {
     mavenCentral()
 }
 
-def allureVersion = "2.17.3",
-    selenideVersion = "6.4.0",
-    junitVersion = "5.8.2",
-    ownerVersion = "1.0.12",
-    assertjVersion = "3.19.0",
-    slf4jVersion = "1.7.36"
+group 'org.example'
+version '1.0-SNAPSHOT'
 
-allure {
-    report {
-        version.set(allureVersion)
-    }
-    adapter {
-        aspectjWeaver.set(true)
-        frameworks {
-            junit5 {
-                adapterVersion.set(allureVersion)
-            }
-        }
-    }
+
+compileTestJava {
+    options.encoding = "UTF-8"
 }
+
+def selenideVersion = "5.24.4",
+    junitVersion = "5.8.1",
+    assertjVersion = "3.19.0",
+    ownerVersion = "1.0.12",
+    seleniumVersion = "3.141.59",
+    slf4jVersion = "1.7.32"
 
 dependencies {
     testImplementation(
             "com.codeborne:selenide:$selenideVersion",
-            "io.qameta.allure:allure-selenide:$allureVersion",
             "org.junit.jupiter:junit-jupiter:$junitVersion",
-            "org.aeonbits.owner:owner:$ownerVersion",
+            "org.slf4j:slf4j-api:$slf4jVersion",
             "org.assertj:assertj-core:$assertjVersion",
+            "org.aeonbits.owner:owner:$ownerVersion",
+            "org.seleniumhq.selenium:selenium-java:$seleniumVersion"
+    )
+    testRuntimeOnly(
+            "org.junit.jupiter:junit-jupiter-engine:$junitVersion",
             "org.slf4j:slf4j-simple:$slf4jVersion"
     )
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
-
-tasks.withType(Test) {
-
-    systemProperty "chromeoptions.prefs", "intl.accept_languages=ru"
-
+test {
     useJUnitPlatform()
-
+    systemProperties(System.getProperties())
     testLogging {
         lifecycle {
             events "started", "skipped", "failed", "standard_error", "standard_out"
@@ -56,3 +46,5 @@ tasks.withType(Test) {
         }
     }
 }
+
+
